@@ -72,9 +72,9 @@ public struct CMEditorWebView: CMViewRepresentable {
     private func updateWebView(_ view: CodeMirrorWebView, context: Context) {
         switch context.environment.colorScheme {
         case .light:
-            view.setThemeName("base16-light")
+            view.setThemeName("espresso-tutti")
         case .dark:
-            view.setThemeName("yonce")
+            view.setThemeName("material")
         @unknown default:
             break
         }
