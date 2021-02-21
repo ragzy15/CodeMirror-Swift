@@ -30,7 +30,7 @@ public struct CMEditorWebView: CMViewRepresentable {
         #endif
     }
     
-    init(_ text: Binding<String>, mimeType: String, isReadOnly: Bool = false,
+    public init(_ text: Binding<String>, mimeType: String, isReadOnly: Bool = false,
          onLoadSuccess: @escaping () -> Void = { },
          onLoadError: @escaping (Error) -> Void = { _ in }) {
         _text = text
