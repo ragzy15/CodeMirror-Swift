@@ -35,7 +35,9 @@ open class CodeMirrorWebView: CMView {
         configuration.userContentController = userController
         let webView = WKWebView(frame: bounds, configuration: configuration)
         webView.navigationDelegate = self
+        #if os(macOS)
         webView.setValue(false, forKey: "drawsBackground") // Prevent white flick
+        #endif
         return webView
     }()
 
