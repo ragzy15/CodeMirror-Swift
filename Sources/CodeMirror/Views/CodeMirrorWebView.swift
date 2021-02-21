@@ -35,9 +35,18 @@ open class CodeMirrorWebView: CMView {
         configuration.userContentController = userController
         let webView = WKWebView(frame: bounds, configuration: configuration)
         webView.navigationDelegate = self
+        webView.allowsLinkPreview = false
+        
+        #if os(iOS)
         webView.scrollView.bounces = false
+        webView.backgroundColor = .clear
+        webView.scrollView.backgroundColor = .clear
+        webView.isOpaque = false
+        webView.scrollView.delegate = self
+        #endif
         
         #if os(macOS)
+        webView.allowsMagnification = false
         webView.setValue(false, forKey: "drawsBackground") // Prevent white flick
         #endif
         
@@ -120,10 +129,6 @@ open class CodeMirrorWebView: CMView {
 extension CodeMirrorWebView {
 
     private func initWebView() {
-        #if os(macOS)
-        webview.allowsMagnification = false
-        #endif
-        
         webview.translatesAutoresizingMaskIntoConstraints = false
         addSubview(webview)
         webview.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
@@ -193,6 +198,14 @@ extension CodeMirrorWebView: WKNavigationDelegate {
     public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         delegate?.codeMirrorViewDidLoadError(self, error: error)
     }
+    
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if navigationAction.request.url?.isFileURL == true {
+            decisionHandler(.allow)
+        } else {
+            decisionHandler(.cancel)
+        }
+    }
 }
 
 // MARK: WKScriptMessageHandler
@@ -215,3 +228,12 @@ extension CodeMirrorWebView: WKScriptMessageHandler {
         }
     }
 }
+
+#if os(iOS)
+extension CodeMirrorWebView: UIScrollViewDelegate {
+    
+    public func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+        scrollView.pinchGestureRecognizer?.isEnabled = false
+    }
+}
+#endif
