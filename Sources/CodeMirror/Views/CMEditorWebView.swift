@@ -64,8 +64,7 @@ public struct CMEditorWebView: CMViewRepresentable {
         let view = CodeMirrorWebView()
         view.delegate = context.coordinator
         view.setContent(text)
-        view.setReadonly(isReadOnly)
-        view.setMimeType(mimeType)
+        updateWebView(view, context: context)
         return view
     }
     
@@ -80,6 +79,8 @@ public struct CMEditorWebView: CMViewRepresentable {
         }
         
         view.setFontSize(Int(fontSize))
+        view.setMimeType(mimeType)
+        view.setReadonly(isReadOnly)
     }
     
     public func makeCoordinator() -> Coordinator {

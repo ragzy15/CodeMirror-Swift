@@ -35,9 +35,12 @@ open class CodeMirrorWebView: CMView {
         configuration.userContentController = userController
         let webView = WKWebView(frame: bounds, configuration: configuration)
         webView.navigationDelegate = self
+        webView.scrollView.bounces = false
+        
         #if os(macOS)
         webView.setValue(false, forKey: "drawsBackground") // Prevent white flick
         #endif
+        
         return webView
     }()
 
@@ -69,12 +72,14 @@ open class CodeMirrorWebView: CMView {
     }
 
     public func setContent(_ value: String) {
-        if let hexString = value.data(using: .utf8)?.hexEncodedString() {
-            let script = """
+        guard let hexString = value.data(using: .utf8)?.hexEncodedString() else {
+            return
+        }
+        
+        let script = """
             var content = "\(hexString)"; SetContent(content);
             """
-            callJavascript(javascriptString: script)
-        }
+        callJavascript(javascriptString: script)
     }
 
     public func getContent(_ block: JavascriptCallback?) {
